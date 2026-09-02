@@ -1,0 +1,51 @@
+{
+  "_comment": [
+    "Site-specific VDI Not-Applicable finding overrides for New-StigAnswerFile.ps1",
+    "Keys are Evaluate-STIG ShortNames (run Evaluate-STIG.ps1 -ListSupportedProducts to list them).",
+    "Values are objects mapping VulnNum (e.g. 'V-253280') to a justification string.",
+    "",
+    "Pass this file to New-StigAnswerFile.ps1 via -VdiNaFile or to",
+    "Invoke-StigPipeline.ps1 via -VdiNaFile.",
+    "",
+    "IMPORTANT: V-numbers change between STIG versions. Cross-reference against",
+    "the current xccdf.xml or run Evaluate-STIG.ps1 -ListApplicableProducts.",
+    "All entries below are EXAMPLES only — verify each with your ISSO/ISSM before",
+    "marking findings Not Applicable."
+  ],
+
+  "Win11": {
+    "_comment": "Windows 11 STIG — VDI-specific Not Applicable findings",
+
+    "V-REPLACE_BitLocker_OS": "BitLocker full-volume encryption of the OS drive is not applicable to non-persistent VDI desktops. The hypervisor (VMware ESXi / Omnissa Horizon) enforces encryption of all datastore extents at rest via VMcrypt or vSAN Encryption per site security architecture. Reference: VDI Gold Image Security Plan, Section 4.2.",
+
+    "V-REPLACE_BitLocker_Fixed": "BitLocker encryption of fixed data drives is not applicable to non-persistent pooled VDI desktops. No persistent user data is stored on local drives; all user data resides in FSLogix profile containers on encrypted network storage. Reference: VDI Gold Image Security Plan, Section 4.2.",
+
+    "V-REPLACE_WindowsHello": "Windows Hello for Business is not applicable in this environment. CAC/PIV Smart Card is the sole approved primary authentication method per DoD policy. Windows Hello PIN is explicitly disabled via Group Policy to prevent PIN-based bypass of Smart Card requirement.",
+
+    "V-REPLACE_StandaloneRisk": "This requirement is not applicable to non-persistent pooled VDI desktops. These systems are managed through Omnissa Horizon Connection Server and do not function as standalone endpoints. Risk is accepted and documented in the System Security Plan.",
+
+    "V-REPLACE_GuestAccount": "The built-in Guest account requirement is not applicable. The Guest account is disabled and locked via Group Policy at the domain level for all VDI desktops in the pool.",
+
+    "V-REPLACE_RecoveryConsole": "Recovery console configuration is not applicable to non-persistent VDI desktops. In the event of a failure, the affected desktop is deleted from the pool and a new instance is provisioned from the sealed gold image."
+  },
+
+  "Chrome": {
+    "_comment": "Google Chrome STIG — organization-specific entries",
+
+    "V-REPLACE_ExtensionAllowlist": "Chrome extension allowlist is managed via Group Policy ADMX. The approved enterprise extension list is configured in GPO 'VDI-Chrome-Hardening' and enforced at the domain level. Individual registry-level configuration is not applicable.",
+
+    "V-REPLACE_DefaultSearchProvider": "Default search provider name and URL are configured via Group Policy to the organization-approved search endpoint. Local registry configuration is not applicable as GPO takes precedence."
+  },
+
+  "MSOffice365": {
+    "_comment": "Microsoft 365 / Office STIG — VDI-specific entries",
+
+    "V-REPLACE_CloudSave": "OneDrive cloud save prompts are managed by the FSLogix profile container. User profile data is stored in ODFC containers on-premises. Cloud save to personal OneDrive is blocked at the network level via Tenant Restrictions policy."
+  },
+
+  "WinFirewall": {
+    "_comment": "Windows Firewall STIG — VDI-specific entries",
+
+    "V-REPLACE_DomainProfile": "Windows Firewall domain profile inbound rules are managed via Group Policy. Domain-joined VDI desktops receive firewall policy from 'VDI-Firewall-Hardening' GPO. Local rule configuration is not applicable."
+  }
+}

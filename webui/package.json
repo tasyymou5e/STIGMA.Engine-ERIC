@@ -1,0 +1,31 @@
+{
+  "name": "stigman-webui",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Vue 3 + PrimeVue front-end for STIG Manager (appliance build)",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "vue-tsc --noEmit",
+    "gen:api": "openapi-typescript https://raw.githubusercontent.com/NUWCDIVNPT/stig-manager/main/api/source/specification/stig-manager.yaml -o src/api/schema.ts"
+  },
+  "dependencies": {
+    "@primevue/themes": "^4.2.5",
+    "chart.js": "^4.4.4",
+    "openapi-fetch": "^0.13.0",
+    "oidc-client-ts": "^3.1.0",
+    "primeicons": "^7.0.0",
+    "primevue": "^4.2.5",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.1",
+    "openapi-typescript": "^7.4.4",
+    "typescript": "~5.6.3",
+    "vite": "^6.0.5",
+    "vue-tsc": "^2.1.10"
+  }
+}

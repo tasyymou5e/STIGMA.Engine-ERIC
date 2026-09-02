@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:ai="http://scap.nist.gov/schema/asset-identification/1.1" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://scap.nist.gov/schema/asset-identification/1.1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.1.0">
+	<xs:annotation>
+		<xs:documentation>The asset-identification schema provides a set of common constructs for identifying assets. This schema is part of the SCAP 1.2 family of specifications.</xs:documentation>
+		<xs:appinfo>
+			<schema-info namespace="http://scap.nist.gov/schema/asset-identification/1.1" version="1.1.0" date="2011-09-21"/>
+			<terms-of-use>Copyright (c) 2009-2011, The MITRE Corporation. All rights reserved. The contents of this file are subject to the terms of the SCAP Feedback License located at https://scap.nist.gov/feedback/</terms-of-use>
+		</xs:appinfo>
+	</xs:annotation>
+	<xs:element name="asset" type="ai:asset-type">
+		<xs:annotation>
+			<xs:documentation>A container for asset identifying information.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="asset-type">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element ref="ai:asset-identification"/>
+			<xs:element ref="ai:locations"/>
+			<xs:element ref="ai:extended-information"/>
+			<xs:any namespace="##other" processContents="lax"/>
+		</xs:choice>
+	</xs:complexType>
+	<xs:element name="asset-identification">
+		<xs:annotation>
+			<xs:documentation>A container for one or more asset identifiers.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="locations">
+		<xs:annotation>
+			<xs:documentation>A container for one or more locations.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="location" type="xs:anyURI" minOccurs="1" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="extended-information">
+		<xs:annotation>
+			<xs:documentation>A container for one or more pieces of extended information about an asset.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:any namespace="##other" processContents="lax" minOccurs="1" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

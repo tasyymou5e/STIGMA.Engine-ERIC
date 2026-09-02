@@ -1,0 +1,5 @@
+Pick up any time with:
+
+cd ~/Downloads/STIG/STIGMA.Engine/engine && npm install && npm test
+cd ../webui && npm install && npm run dev
+When you're ready for the next slice, the open work is: backend — review history/status-workflow tables, STIG benchmark import, POA&M/CKL export; front-end — metrics dashboard (ECharts), assets + per-asset review grids, and the full typed API client via npm run gen:api.

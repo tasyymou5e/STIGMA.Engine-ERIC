@@ -1,0 +1,94 @@
+# Production single-origin TLS appliance.
+# envsubst replaces ${API_UPSTREAM} / ${KC_UPSTREAM} at container start;
+# nginx runtime vars ($host, $uri, $scheme, ...) are lowercase and left untouched.
+
+# Redirect all plain HTTP to HTTPS.
+server {
+    listen 80;
+    server_name _;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    http2 on;
+    server_name _;
+
+    ssl_certificate     /etc/nginx/certs/localhost.crt;
+    ssl_certificate_key /etc/nginx/certs/localhost.key;
+    ssl_protocols       TLSv1.2 TLSv1.3;
+
+    # Allow large STIG / CKL uploads (Fastify allows 10 MB; match it here).
+    client_max_body_size 20m;
+
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # Use Docker's embedded DNS resolver so container hostnames re-resolve
+    # every 5 seconds.  Without this, nginx caches the IP at startup and
+    # returns 502 after any container is recreated (new IP assigned by Docker).
+    resolver 127.0.0.11 valid=5s ipv6=off;
+    resolver_timeout 3s;
+
+    # Grafana monitoring (anonymous access, embedded dashboards).
+    # rewrite strips /grafana/ prefix; variable forces dynamic DNS resolution.
+    location /grafana/ {
+        set $grafana_upstream http://grafana:3000;
+        rewrite ^/grafana/?(.*) /grafana/$1 break;
+        proxy_pass $grafana_upstream;
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        # Allow Grafana iframes to be embedded in ERIC UI
+        proxy_hide_header X-Frame-Options;
+        add_header X-Frame-Options SAMEORIGIN;
+    }
+
+    # SSE endpoints — must have proxy_buffering off so events flush immediately.
+    # Covers: /stigman/api/op/logs/stream  and  /stigman/api/eval-stig/jobs/*/stream
+    location ~ ^/stigman/api/(op/logs/stream|eval-stig/jobs/[^/]+/stream) {
+        set $engine_upstream http://engine:54100;
+        rewrite ^/stigman/?(.*) /$1 break;
+        proxy_pass         $engine_upstream;
+        proxy_set_header   Host              $host;
+        proxy_set_header   X-Real-IP         $remote_addr;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        proxy_buffering    off;
+        proxy_cache        off;
+        proxy_read_timeout 14400s;
+        chunked_transfer_encoding on;
+    }
+
+    # ERIC engine API (SPA calls /stigman/api/* -> engine /api/*).
+    # rewrite strips /stigman prefix; variable forces dynamic DNS resolution.
+    location /stigman/ {
+        set $engine_upstream http://engine:54100;
+        rewrite ^/stigman/?(.*) /$1 break;
+        proxy_pass $engine_upstream;
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Keycloak (OIDC), served under /kc.
+    # rewrite strips /kc prefix; variable forces dynamic DNS resolution.
+    location /kc/ {
+        set $kc_upstream http://keycloak:8080;
+        rewrite ^/kc/?(.*) /kc/$1 break;
+        proxy_pass $kc_upstream;
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host  $host;
+        proxy_set_header X-Forwarded-Port  443;
+    }
+
+    # SPA history-mode fallback.
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}

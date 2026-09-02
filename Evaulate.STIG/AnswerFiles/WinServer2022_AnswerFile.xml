@@ -1,0 +1,303 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--**************************************************************************************
+This file contains answers for known opens and findings that cannot be evaluated through technical means.
+<STIGComments>      - Top element.  May only occur once.
+      "Name"           : Required.  Must match the STIG ShortName in -ListSupportedProducts.  When a match is found, this answer file will automatically be used for the STIG.
+<Vuln>              - Multiple <Vuln> sections may be configured in a single answer file provided the "ID" attribute is unique.
+      "ID"             : Required.  The STIG VulnID or RuleID.
+<AnswerKey>         - Multiple <AnswerKey> sections may be configured within a single <Vuln> section provided the "Name" attribute is unique.
+      "Name"           : Required.  The name of the key to be called by "-AnswerKey".  "DEFAULT" may be used in lieu of using "-AnswerKey".
+<Answer>            - Multiple <Answer> sections may be configured within an <AnswerKey> section provided the "Index" attribute is unique AND the combination of the other attributes is unique.
+      "Index"          : Required.  Identifier for the answer.
+      "ExpectedStatus" : Required.  The initial status that Evaluate-STIG determined.  Refer to "Valid Status formats" below.
+      "Hostname"       : Optional.  Hostname(s) that the answer is applicable to.  Use comma separation for multiple.
+      "Instance"       : Optional.  Instance name(s) (e.g. for SQL) that the answer is applicable to.  Use comma separation for multiple.  Reference FindingDetails for appropriate Instance value.
+      "Database"       : Optional.  Database name(s) (e.g. for SQL) that the answer is applicable to.  Use comma separation for multiple.  Reference FindingDetails for appropriate Database value.
+      "Site"           : Optional.  Site names (e.g. for IIS) that the answer is applicable to.  Use comma separation for multiple.  Reference FindingDetails for appropriate Site value.
+      "ResultHash"     : Optional.  Hash of FindingDetails text after "~~~~~" bar.  Use comma separation for multiple.  Reference FindingDetails for calculated ResultHash.
+<ValidationCode>    - Powershell code that returns a boolean value or Hashtable.  If blank, "true" is assumed.
+                      *Note: If Validation Code returns a Hashtable, the Object MUST contain both [String]"Results" and [Boolean]"Valid" keys.  "Results" will be written to the Comments field of the STIG check.
+                      The following Evaluate-STIG variables are also available to be called within validation code:
+      $ESPath          : [String]  Path that Evaluate-STIG.ps1 was executed from.
+      $ExpectedStatus  : [String]  Status that Evaluate-STIG determined.  Will be in CKL format (refer to "Valid Status formats" below).
+      $ResultHash      : [String]  SHA1 hash of ResultData.  Reference FindingDetails for calculated ResultHash.
+      $ResultData      : [Array]   FindingDetails content after "~~~~~" bar.
+      $Username        : [String]  User name processed for HKCU check.  Reference to FindingDetails for appropriate Username value.
+      $UserSID         : [String]  User SID processed for HKCU check.  Reference to FindingDetails for appropriate UserSID value.
+      $Instance        : [String]  Instance name processed.  Reference FindingDetails for appropriate Instance value.
+      $Database        : [String]  Database name processed.  Reference FindingDetails for appropriate Database value.
+      $Site            : [String]  Site name processed.  Reference FindingDetails for appropriate Site value.
+      $ShowRun         : [Array]   Show-RunningConfig section from Cisco Show-TechSupport.
+<ValidTrueStatus>   - The status the check should be set to if ValidationCode returns "true".  Refer to "Valid Status formats" below.  If blank, Status is unchanged.
+<ValidTrueComment>  - The verbiage to add to the Comments section if ValidationCode returns "true".
+<ValidFalseStatus>  - The status the check should be set to if ValidationCode DOES NOT return "true".  Refer to "Valid Status formats" below.  If blank, Status is unchanged
+<ValidFalseComment> - The verbiage to add to the Comments section if ValidationCode DOES NOT return "true".
+
+* Valid Status formats:
+    |     Status     | EvalSTIG |       CKL        |       CKLB       |      XCCDF      |
+    |================|==========|==================|==================|=================|
+    | Not Reviewed   | "NR"     | "Not_Reviewed"   | "Not_Reviewed"   | "notchecked"    |
+    | Not A Finding  | "NF"     | "NotAFinding"    | "not_a_finding"  | "pass"          |
+    | Open           | "O"      | "Open"           | "Open"           | "fail"          |
+    | Not Applicable | "NA"     | "Not_Applicable" | "Not_Applicable" | "notapplicable" |
+    |================|==========|==================|==================|=================|
+
+* Answer Weighting:
+  Evaluate-STIG adds the weights for all "applicable" attributes configured in an <Answer>.  If an attribute is configured but not applicable to the STIG (e.g. configuring the "Database" attribute for an IIS Site STIG) then the weight for that attribute is not included in the calculation.
+    |    Attribute     | Weight |
+    |==================|========|
+    | ExpectedStatus   |   0 *  |  * ExpectedStatus is a hard requirement.  If not a match, the answer is ignored.
+    | Hostname         |   5    |
+    | Instance         |   4    |
+    | Database         |   3    |
+    | Site             |   2    |
+    | ResultHash       |   1    |
+    | <AnswerKey Name> |   16   |
+    |==================|========|
+**************************************************************************************-->
+<STIGComments Name="WinServer2022">
+  <!--Evaluate-STIG answer file for MS Windows Server 2022 STIG-->
+  <Vuln ID="V-254238">
+    <!--RuleTitle: Windows Server 2022 users with Administrative privileges must have separate accounts for administrative duties and normal operational tasks.-->
+    <AnswerKey Name="DEFAULT">
+      <!--AnswerKey created by Evaluate-STIG_GUI.ps1-->
+      <Answer Index="1" ExpectedStatus="Not_Reviewed" Hostname="" Instance="" Database="" Site="" ResultHash="">
+        <!--Index created by Evaluate-STIG_GUI.ps1-->
+        <ValidationCode></ValidationCode>
+        <ValidTrueStatus>NotAFinding</ValidTrueStatus>
+        <ValidTrueComment>Accomplished with CAC card and ADF ALT tokens.</ValidTrueComment>
+        <ValidFalseStatus></ValidFalseStatus>
+        <ValidFalseComment></ValidFalseComment>
+      </Answer>
+    </AnswerKey>
+  </Vuln>
+  <Vuln ID="V-254239">
+    <!--RuleTitle: Windows Server 2022 passwords for the built-in Administrator account must be changed at least every 60 days.-->
+    <AnswerKey Name="DEFAULT">
+      <!--AnswerKey created by Evaluate-STIG_GUI.ps1-->
+      <Answer Index="1" ExpectedStatus="Open" Hostname="" Instance="" Database="" Site="" ResultHash="2C3AC7C2EDADC2BC108348A3AB290A9BB8399717">
+        <!--Index created by Evaluate-STIG_GUI.ps1-->
+        <ValidationCode></ValidationCode>
+        <ValidTrueStatus>Open</ValidTrueStatus>
+        <ValidTrueComment>All enabled local admin account passwords ahve been changed with the last 60 days.
+
+NOTE: Change LAPS settings.</ValidTrueComment>
+        <ValidFalseStatus></ValidFalseStatus>
+        <ValidFalseComment></ValidFalseComment>
+      </Answer>
+    </AnswerKey>
+  </Vuln>
+  <Vuln ID="V-254240">
+    <!--RuleTitle: Windows Server 2022 administrative accounts must not be used with applications that access the internet, such as web browsers, or with potential internet sources, such as email.-->
+    <AnswerKey Name="DEFAULT">
+      <!--AnswerKey created by Evaluate-STIG_GUI.ps1-->
+      <Answer Index="1" ExpectedStatus="Not_Reviewed" Hostname="" Instance="" Database="" Site="" ResultHash="">
+        <!--Index created by Evaluate-STIG_GUI.ps1-->
+        <ValidationCode></ValidationCode>
+        <ValidTrueStatus>NotAFinding</ValidTrueStatus>
+        <ValidTrueComment>Accomplished with security group BC_CAT_VI in ADF accounts. Prevents internet access and email access.</ValidTrueComment>
+        <ValidFalseStatus></ValidFalseStatus>
+        <ValidFalseComment></ValidFalseComment>
+      </Answer>
+    </AnswerKey>
+  </Vuln>
+  <Vuln ID="V-254243">
+    <!--RuleTitle: Windows Server 2022 manually managed application account passwords must be changed at least annually or when a system administrator with knowledge of the password leaves the organization.-->
+    <AnswerKey Name="DEFAULT">
+      <!--AnswerKey created by Evaluate-STIG_GUI.ps1-->
+      <Answer Index="1" ExpectedStatus="Not_Reviewed" Hostname="" Instance="" Database="" Site="" ResultHash="">
+        <!--Index created by Evaluate-STIG_GUI.ps1-->
+        <ValidationCode></ValidationCode>
+        <ValidTrueStatus>Open</ValidTrueStatus>
+        <ValidTrueComment>Local admin accounts have been changed in less than 30 days.
+
+NOTE: Be sure to check this.</ValidTrueComment>
+        <ValidFalseStatus></ValidFalseStatus>
+        <ValidFalseComment></ValidFalseComment>
+      </Answer>
+    </AnswerKey>
+  </Vuln>
+  <Vuln ID="V-254244">
+    <!--RuleTitle: Windows Server 2022 shared user accounts must not be permitted.-->
+    <AnswerKey Name="DEFAULT">
+      <!--AnswerKey created by Evaluate-STIG_GUI.ps1-->
+      <Answer Index="1" ExpectedStatus="Not_Reviewed" Hostname="" Instance="" Database="" Site="" ResultHash="">
+        <!--Index created by Evaluate-STIG_GUI.ps1-->
+        <ValidationCode></ValidationCode>
+        <ValidTrueStatus>Not_Applicable</ValidTrueStatus>
+        <ValidTrueComment>No shared accounts</ValidTrueComment>
+        <ValidFalseStatus></ValidFalseStatus>
+        <ValidFalseComment></ValidFalseComment>
+      </Answer>
+    </AnswerKey>
+  </Vuln>
+  <Vuln ID="V-254245">
+    <!--RuleTitle: Windows Server 2022 must employ a deny-all, permit-by-exception policy to allow the execution of authorized software programs.-->
+    <AnswerKey Name="DEFAULT">
+      <!--AnswerKey created by Evaluate-STIG_GUI.ps1-->
+      <Answer Index="1" ExpectedStatus="Not_Reviewed" Hostname="" Instance="" Database="" Site="" ResultHash="49A095DC33B1A3DFEEB7EEB6886E1344EBACC16B">
+        <!--Index created by Evaluate-STIG_GUI.ps1-->
+        <ValidationCode></ValidationCode>
+        <ValidTrueStatus>Open</ValidTrueStatus>
+        <ValidTrueComment>AppLocker controls this, but we do not control AppLocker. Will need to see if MDE-MDAV controls this.</ValidTrueComment>
+        <ValidFalseStatus></ValidFalseStatus>
+        <ValidFalseComment></ValidFalseComment>
+      </Answer>
+    </AnswerKey>
+  </Vuln>
+  <Vuln ID="V-254249">
+    <!--RuleTitle: Windows Server 2022 must have a host-based intrusion detection or prevention system.-->
+    <AnswerKey Name="DEFAULT">
+      <!--AnswerKey created by Evaluate-STIG_GUI.ps1-->
+      <Answer Index="1" ExpectedStatus="Not_Reviewed" Hostname="" Instance="" Database="" Site="" ResultHash="">
+        <!--Index created by Evaluate-STIG_GUI.ps1-->
+        <ValidationCode></ValidationCode>
+        <ValidTrueStatus>NotAFinding</ValidTrueStatus>
+        <ValidTrueComment>SolarWinds is used in the environment for this STIG requirement.</ValidTrueComment>
+        <ValidFalseStatus></ValidFalseStatus>
+        <ValidFalseComment></ValidFalseComment>
+      </Answer>
+    </AnswerKey>
+  </Vuln>
+  <Vuln ID="V-254259">
+    <!--RuleTitle: Windows Server 2022 system files must be monitored for unauthorized changes.-->
+    <AnswerKey Name="DEFAULT">
+      <!--AnswerKey created by Evaluate-STIG_GUI.ps1-->
+      <Answer Index="1" ExpectedStatus="Not_Reviewed" Hostname="" Instance="" Database="" Site="" ResultHash="">
+        <!--Index created by Evaluate-STIG_GUI.ps1-->
+        <ValidationCode></ValidationCode>
+        <ValidTrueStatus>Open</ValidTrueStatus>
+        <ValidTrueComment>POAM #2141
+No system in place currently.</ValidTrueComment>
+        <ValidFalseStatus></ValidFalseStatus>
+        <ValidFalseComment></ValidFalseComment>
+      </Answer>
+    </AnswerKey>
+  </Vuln>
+  <Vuln ID="V-254262">
+    <!--RuleTitle: Windows Server 2022 systems requiring data at rest protections must employ cryptographic mechanisms to prevent unauthorized disclosure and modification of the information at rest.-->
+    <AnswerKey Name="DEFAULT">
+      <!--AnswerKey created by Evaluate-STIG_GUI.ps1-->
+      <Answer Index="1" ExpectedStatus="Not_Reviewed" Hostname="" Instance="" Database="" Site="" ResultHash="">
+        <!--Index created by Evaluate-STIG_GUI.ps1-->
+        <ValidationCode></ValidationCode>
+        <ValidTrueStatus>NotAFinding</ValidTrueStatus>
+        <ValidTrueComment>ADF Tokens are needed to access this server as part of additional security.</ValidTrueComment>
+        <ValidFalseStatus></ValidFalseStatus>
+        <ValidFalseComment></ValidFalseComment>
+      </Answer>
+    </AnswerKey>
+  </Vuln>
+  <Vuln ID="V-254263">
+    <!--RuleTitle: Windows Server 2022 must implement protection methods such as TLS, encrypted VPNs, or IPsec if the data owner has a strict requirement for ensuring data integrity and confidentiality is maintained at every step of the data transfer and handling process.-->
+    <AnswerKey Name="DEFAULT">
+      <!--AnswerKey created by Evaluate-STIG_GUI.ps1-->
+      <Answer Index="1" ExpectedStatus="Not_Reviewed" Hostname="" Instance="" Database="" Site="" ResultHash="">
+        <!--Index created by Evaluate-STIG_GUI.ps1-->
+        <ValidationCode></ValidationCode>
+        <ValidTrueStatus>NotAFinding</ValidTrueStatus>
+        <ValidTrueComment>TLS is used for encryption on this server.</ValidTrueComment>
+        <ValidFalseStatus></ValidFalseStatus>
+        <ValidFalseComment></ValidFalseComment>
+      </Answer>
+    </AnswerKey>
+  </Vuln>
+  <Vuln ID="V-254264">
+    <!--RuleTitle: Windows Server 2022 must have the roles and features required by the system documented.-->
+    <AnswerKey Name="DEFAULT">
+      <!--AnswerKey created by Evaluate-STIG_GUI.ps1-->
+      <Answer Index="1" ExpectedStatus="Not_Reviewed" Hostname="" Instance="" Database="" Site="" ResultHash="6AEAE0579D2421FAF2F3F4233AD7C7CEDD233A40">
+        <!--Index created by Evaluate-STIG_GUI.ps1-->
+        <ValidationCode></ValidationCode>
+        <ValidTrueStatus>NotAFinding</ValidTrueStatus>
+        <ValidTrueComment>Documented.</ValidTrueComment>
+        <ValidFalseStatus></ValidFalseStatus>
+        <ValidFalseComment></ValidFalseComment>
+      </Answer>
+    </AnswerKey>
+  </Vuln>
+  <Vuln ID="V-254266">
+    <!--RuleTitle: Windows Server 2022 must employ automated mechanisms to determine the state of system components with regard to flaw remediation using the following frequency: continuously, where Endpoint Security Solution (ESS) is used; 30 days, for any additional internal network scans not covered by ESS; and annually, for external scans by Computer Network Defense Service Provider (CNDSP).-->
+    <AnswerKey Name="DEFAULT">
+      <!--AnswerKey created by Evaluate-STIG_GUI.ps1-->
+      <Answer Index="1" ExpectedStatus="Not_Reviewed" Hostname="" Instance="" Database="" Site="" ResultHash="">
+        <!--Index created by Evaluate-STIG_GUI.ps1-->
+        <ValidationCode></ValidationCode>
+        <ValidTrueStatus>NotAFinding</ValidTrueStatus>
+        <ValidTrueComment>MDE-MDAV is installed and running.</ValidTrueComment>
+        <ValidFalseStatus></ValidFalseStatus>
+        <ValidFalseComment></ValidFalseComment>
+      </Answer>
+    </AnswerKey>
+  </Vuln>
+  <Vuln ID="V-254267">
+    <!--RuleTitle: Windows Server 2022 must automatically remove or disable temporary user accounts after 72 hours.-->
+    <AnswerKey Name="DEFAULT">
+      <!--AnswerKey created by Evaluate-STIG_GUI.ps1-->
+      <Answer Index="1" ExpectedStatus="Not_Reviewed" Hostname="" Instance="" Database="" Site="" ResultHash="129AAEF8C98B12262CD5814E10D70D7749FB55E0">
+        <!--Index created by Evaluate-STIG_GUI.ps1-->
+        <ValidationCode></ValidationCode>
+        <ValidTrueStatus>Not_Applicable</ValidTrueStatus>
+        <ValidTrueComment>No temporary accounts.</ValidTrueComment>
+        <ValidFalseStatus></ValidFalseStatus>
+        <ValidFalseComment></ValidFalseComment>
+      </Answer>
+    </AnswerKey>
+  </Vuln>
+  <Vuln ID="V-254268">
+    <!--RuleTitle: Windows Server 2022 must automatically remove or disable emergency accounts after the crisis is resolved or within 72 hours.-->
+    <AnswerKey Name="DEFAULT">
+      <!--AnswerKey created by Evaluate-STIG_GUI.ps1-->
+      <Answer Index="1" ExpectedStatus="Not_Reviewed" Hostname="" Instance="" Database="" Site="" ResultHash="A2DFD837F05076354B18E9404AAC0860BC860EE5">
+        <!--Index created by Evaluate-STIG_GUI.ps1-->
+        <ValidationCode></ValidationCode>
+        <ValidTrueStatus>Not_Applicable</ValidTrueStatus>
+        <ValidTrueComment>No emergency accounts.</ValidTrueComment>
+        <ValidFalseStatus></ValidFalseStatus>
+        <ValidFalseComment></ValidFalseComment>
+      </Answer>
+    </AnswerKey>
+  </Vuln>
+  <Vuln ID="V-254294">
+    <!--RuleTitle: Windows Server 2022 audit records must be backed up to a different system or media than the system being audited.-->
+    <AnswerKey Name="DEFAULT">
+      <!--AnswerKey created by Evaluate-STIG_GUI.ps1-->
+      <Answer Index="1" ExpectedStatus="Not_Reviewed" Hostname="" Instance="" Database="" Site="" ResultHash="">
+        <!--Index created by Evaluate-STIG_GUI.ps1-->
+        <ValidationCode></ValidationCode>
+        <ValidTrueStatus>NotAFinding</ValidTrueStatus>
+        <ValidTrueComment>Audit records offloaded to Log Insight.</ValidTrueComment>
+        <ValidFalseStatus></ValidFalseStatus>
+        <ValidFalseComment></ValidFalseComment>
+      </Answer>
+    </AnswerKey>
+  </Vuln>
+  <Vuln ID="V-254295">
+    <!--RuleTitle: Windows Server 2022 must, at a minimum, offload audit records of interconnected systems in real time and offload standalone or nondomain-joined systems weekly.-->
+    <AnswerKey Name="DEFAULT">
+      <!--AnswerKey created by Evaluate-STIG_GUI.ps1-->
+      <Answer Index="1" ExpectedStatus="Not_Reviewed" Hostname="" Instance="" Database="" Site="" ResultHash="">
+        <!--Index created by Evaluate-STIG_GUI.ps1-->
+        <ValidationCode></ValidationCode>
+        <ValidTrueStatus>NotAFinding</ValidTrueStatus>
+        <ValidTrueComment>Audit records are offloaded to Log Insight.</ValidTrueComment>
+        <ValidFalseStatus></ValidFalseStatus>
+        <ValidFalseComment></ValidFalseComment>
+      </Answer>
+    </AnswerKey>
+  </Vuln>
+  <Vuln ID="V-254428">
+    <!--RuleTitle: Windows Server 2022 must only allow administrators responsible for the member server or standalone or nondomain-joined system to have Administrator rights on the system.-->
+    <AnswerKey Name="DEFAULT">
+      <!--AnswerKey created by Evaluate-STIG_GUI.ps1-->
+      <Answer Index="1" ExpectedStatus="Not_Reviewed" Hostname="" Instance="" Database="" Site="" ResultHash="29EF5795DD549D116848F08949AA074F22C3CF74">
+        <!--Index created by Evaluate-STIG_GUI.ps1-->
+        <ValidationCode></ValidationCode>
+        <ValidTrueStatus>NotAFinding</ValidTrueStatus>
+        <ValidTrueComment>All accounts administer the server and no user accounts are on the server. Local admins are there in case server falls off domain.</ValidTrueComment>
+        <ValidFalseStatus></ValidFalseStatus>
+        <ValidFalseComment></ValidFalseComment>
+      </Answer>
+    </AnswerKey>
+  </Vuln>
+</STIGComments>

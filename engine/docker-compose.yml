@@ -1,0 +1,30 @@
+# Self-contained engine + its own MySQL. For OIDC it validates tokens from the
+# existing Keycloak; ALLOW_INSECURE_TOKENS=true makes the demo realm work locally.
+services:
+  engine-db:
+    image: mysql:8.0.38
+    command: --innodb-buffer-pool-size=512M
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpw
+      - MYSQL_USER=stigman
+      - MYSQL_PASSWORD=stigmanpw
+      - MYSQL_DATABASE=stigman_engine
+    volumes:
+      - ./engine-mysql-data:/var/lib/mysql
+
+  engine:
+    build: .
+    depends_on:
+      - engine-db
+    environment:
+      - DB_HOST=engine-db
+      - DB_USER=stigman
+      - DB_PASSWORD=stigmanpw
+      - DB_NAME=stigman_engine
+      - OIDC_ISSUER=https://localhost/kc/realms/stigman
+      - ALLOW_INSECURE_TOKENS=true
+      - CORS_ORIGIN=*
+    ports:
+      - "54100:54100"
+    # First run: create schema, then start.
+    command: sh -c "node dist/db/migrate.js && node dist/index.js"

@@ -1,0 +1,16 @@
+# Local-run hardening (auto-merged by `docker compose up`; leaves docker-compose.yml untouched).
+# Fixes the first-run race where the engine migrates before MySQL is ready.
+services:
+  engine-db:
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-prootpw"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 40s
+
+  engine:
+    depends_on:
+      engine-db:
+        condition: service_healthy
+    restart: on-failure

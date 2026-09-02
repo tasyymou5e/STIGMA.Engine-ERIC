@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:rc="http://scap.nist.gov/schema/reporting-core/1.1" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" targetNamespace="http://scap.nist.gov/schema/reporting-core/1.1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.1.0">
+	<xs:annotation>
+		<xs:documentation>The reporting-core schema provides a set of common constructs that are used by SCAP content-specific schemas. This schema is part of the SCAP 1.2 family of specifications.</xs:documentation>
+		<xs:appinfo>
+			<schema-info namespace="http://scap.nist.gov/schema/reporting-core/1.1" version="1.1.0" date="2011-09-21"/>
+			<terms-of-use>Copyright (c) 2009-2011, The MITRE Corporation. All rights reserved. The contents of this file are subject to the terms of the SCAP Feedback License located at https://scap.nist.gov/feedback/</terms-of-use>
+		</xs:appinfo>
+	</xs:annotation>
+	<xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlink.xsd"/>
+	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
+	<xs:element name="relationships" type="rc:relationships-container-type">
+		<xs:annotation>
+			<xs:documentation>This element holds one or more relationship elements. Each relationship element defines a relationship between two pieces of content. For example, a relationship could link an OVAL definition to the CVE that it checks. This relationship construct is generic to support the needs of SCAP. For more information on the expected use of this element, refer to the SCAP version 1.2 specification.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="relationships-container-type">
+		<xs:sequence>
+			<xs:element name="relationship" type="rc:relationship-type" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>This element defines a relationship between two pieces of content. For example, a relationship could link an OVAL definition to the CVE that it checks. This relationship construct is generic to support the needs of SCAP. For more information on the expected use of this element, refer to the SCAP version 1.2 specification.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="relationship-type">
+		<xs:attribute name="subject" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>The subject of the relationship. This would be the "from" side of the relationship. The value of this attribute must correspond to the unique ID of a piece of content.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="type" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>The type of relationship. This would be the verb of the relationship. For example, "checks for". Acceptable values for this would be defined in the specification that is using this construct.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="object" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>The object of the relationship. This would be the "to" side of the relationship. The value of this attribute must correspond to the unique ID of a piece of content.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+</xs:schema>

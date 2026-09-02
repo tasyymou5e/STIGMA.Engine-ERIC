@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:dc="http://purl.org/dc/elements/1.1/" targetNamespace="http://purl.org/dc/elements/1.1/" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">
+			Simple Dublin Core Element Set XML Schema
+			XML Schema for http://purl.org/dc/elements/1.1/ namespace
+
+			Created 2008-02-11
+
+			Created by 
+			Tim Cole (t-cole3@uiuc.edu)
+			Tom Habing (thabing@uiuc.edu)
+			Jane Hunter (jane@dstc.edu.au)
+			Pete Johnston (p.johnston@ukoln.ac.uk),
+			Carl Lagoze (lagoze@cs.cornell.edu)
+
+			This schema declares XML elements for the 15 Dublin Core elements
+			in the http://purl.org/dc/elements/1.1/ namespace.
+			The schema is based on the W3C XML Schema language.
+
+			All elements are declared as belonging to a substitution group 
+			headed by the abstract element "any". This allows new elements
+			to be substituted for the DC elements. It also allows the
+			use of the xsi:type attribute to specify a type for the element
+			content.
+		</xs:documentation>
+	</xs:annotation>
+	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
+	<xs:complexType name="elementContainer">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element ref="dc:any"/>
+		</xs:choice>
+	</xs:complexType>
+	<xs:element name="any" abstract="true"/>
+	<xs:complexType name="SimpleLiteral">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute ref="xml:lang" use="optional"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:element name="title" substitutionGroup="dc:any">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:restriction base="dc:SimpleLiteral"/>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="creator" substitutionGroup="dc:any">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:restriction base="dc:SimpleLiteral"/>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="subject" substitutionGroup="dc:any">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:restriction base="dc:SimpleLiteral"/>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="description" substitutionGroup="dc:any">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:restriction base="dc:SimpleLiteral"/>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="publisher" substitutionGroup="dc:any">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:restriction base="dc:SimpleLiteral"/>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="contributor" substitutionGroup="dc:any">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:restriction base="dc:SimpleLiteral"/>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="date" substitutionGroup="dc:any">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:restriction base="dc:SimpleLiteral"/>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="type" substitutionGroup="dc:any">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:restriction base="dc:SimpleLiteral"/>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="format" substitutionGroup="dc:any">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:restriction base="dc:SimpleLiteral"/>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="identifier" substitutionGroup="dc:any">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:restriction base="dc:SimpleLiteral"/>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="source" substitutionGroup="dc:any">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:restriction base="dc:SimpleLiteral"/>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="language" substitutionGroup="dc:any">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:restriction base="dc:SimpleLiteral"/>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="relation" substitutionGroup="dc:any">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:restriction base="dc:SimpleLiteral"/>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="coverage" substitutionGroup="dc:any">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:restriction base="dc:SimpleLiteral"/>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="rights" substitutionGroup="dc:any">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:restriction base="dc:SimpleLiteral"/>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

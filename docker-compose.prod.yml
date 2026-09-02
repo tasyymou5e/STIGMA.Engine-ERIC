@@ -1,0 +1,192 @@
+# Production-style stack: single-origin HTTPS appliance.
+#   Browser -> https://localhost (nginx) -> SPA + /stigman/api (engine) + /kc (Keycloak)
+# Real JWT signature verification (no ALLOW_INSECURE_TOKENS). Persistent databases.
+# Run from this directory:
+#   docker compose --env-file .env.prod -f docker-compose.prod.yml up --build -d
+name: stigma-prod
+
+secrets:
+  mysql_pw:
+    file: ./secrets/mysql_pw.txt
+  mysql_root_pw:
+    file: ./secrets/mysql_root_pw.txt
+  kc_admin_pw:
+    file: ./secrets/kc_admin_pw.txt
+  kc_db_pw:
+    file: ./secrets/kc_db_pw.txt
+
+services:
+  # ---- Keycloak's own database (persistent) ----
+  keycloak-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD_FILE: /run/secrets/kc_db_pw
+    secrets:
+      - kc_db_pw
+    volumes:
+      - kc_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak -d keycloak"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  # ---- Keycloak (production mode, served under /kc, behind the nginx TLS proxy) ----
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    entrypoint: ["/bin/sh", "-c", "export KC_BOOTSTRAP_ADMIN_PASSWORD=$(cat /run/secrets/kc_admin_pw) && export KC_DB_PASSWORD=$(cat /run/secrets/kc_db_pw) && exec /opt/keycloak/bin/kc.sh start --import-realm"]
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      # Public base URL (sets issuer + relative path); TLS is terminated at nginx.
+      KC_HOSTNAME: https://localhost/kc
+      KC_HTTP_RELATIVE_PATH: /kc
+      KC_HTTP_ENABLED: "true"
+      KC_PROXY_HEADERS: xforwarded
+      KC_HEALTH_ENABLED: "true"
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+    secrets:
+      - kc_admin_pw
+      - kc_db_pw
+    volumes:
+      - ./prod/keycloak:/opt/keycloak/data/import:ro
+
+  # ---- Engine's MySQL (persistent) ----
+  engine-db:
+    image: mysql:8.0.38
+    command: --innodb-buffer-pool-size=512M
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_pw
+      MYSQL_USER: stigman
+      MYSQL_PASSWORD_FILE: /run/secrets/mysql_pw
+      MYSQL_DATABASE: stigman_engine
+    secrets:
+      - mysql_pw
+      - mysql_root_pw
+    volumes:
+      - engine_mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$(cat /run/secrets/mysql_root_pw)"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 40s
+
+  # ---- ERIC engine API (internal only; reached via nginx /stigman/api) ----
+  engine:
+    build: ./engine
+    depends_on:
+      engine-db:
+        condition: service_healthy
+    environment:
+      DB_HOST: engine-db
+      DB_USER: stigman
+      DB_PASSWORD_FILE: /run/secrets/mysql_pw
+      DB_NAME: stigman_engine
+      # Real OIDC verification: issuer string the browser-issued tokens carry,
+      # JWKS fetched over the internal docker network (keys are identical).
+      OIDC_ISSUER: https://localhost/kc/realms/stigman
+      OIDC_JWKS_URI: http://keycloak:8080/kc/realms/stigman/protocol/openid-connect/certs
+      CORS_ORIGIN: https://localhost
+      CLASSIFICATION: CUI
+      # ALLOW_INSECURE_TOKENS intentionally NOT set -> signatures are verified.
+    secrets:
+      - mysql_pw
+    volumes:
+      # Mount scripts directory read-only so the engine can read the watchdog log
+      - ./scripts:/app/scripts:ro
+      # Job queue shared with the Windows Evaluate-STIG agent (read-write)
+      - ./scripts/eval-jobs:/app/scripts/eval-jobs
+      # Evaluate-STIG PowerShell tool — mounted read-only for status checks
+      - ./Evaulate.STIG:/app/eval-stig:ro
+      # Engine logs — written to C:\Temp\STIGMA-Logs on the Windows host
+      - C:\Temp\STIGMA-Logs:/app/logs
+    command: sh -c "node dist/db/migrate.js && node dist/index.js"
+    restart: on-failure
+
+  # ---- nginx TLS appliance: serves built SPA + reverse-proxies API and Keycloak ----
+  webui:
+    build: ./webui
+    depends_on:
+      - engine
+      - keycloak
+    environment:
+      API_UPSTREAM: http://engine:54100/
+      KC_UPSTREAM: http://keycloak:8080/kc/
+      OIDC_AUTHORITY: https://localhost/kc/realms/stigman
+      OIDC_CLIENT_ID: stig-manager
+      OIDC_SCOPE: "openid stig-manager:collection stig-manager:stig stig-manager:user stig-manager:op"
+      API_BASE: /stigman/api
+    volumes:
+      - ./prod/nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./prod/certs:/etc/nginx/certs:ro
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: on-failure
+
+  mysqld-exporter:
+    image: prom/mysqld-exporter:v0.15.1
+    command:
+      - --mysqld.address=engine-db:3306
+      - --mysqld.username=exporter
+      - --collect.info_schema.innodb_metrics
+      - --collect.info_schema.tables
+      - --collect.global_status
+      - --collect.global_variables
+      - --collect.slave_status
+      - --collect.perf_schema.eventsstatements
+    environment:
+      MYSQLD_EXPORTER_PASSWORD: "${MYSQL_ROOT_PW}"
+    depends_on:
+      engine-db:
+        condition: service_healthy
+    networks: [default]
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    command: ["--config.file=/etc/prometheus/prometheus.yml"]
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      # Subpath: serve Grafana at /grafana/ through nginx proxy
+      GF_SERVER_ROOT_URL: https://localhost/grafana/
+      GF_SERVER_SERVE_FROM_SUB_PATH: "true"
+      GF_SERVER_DOMAIN: localhost
+      # Anonymous access: anyone visiting /grafana/ is auto-logged in as Viewer
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_NAME: Main Org.
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_AUTH_ANONYMOUS_HIDE_VERSION: "true"
+      # Allow iframes (needed for embedding panels in ERIC)
+      GF_SECURITY_ALLOW_EMBEDDING: "true"
+      GF_SECURITY_COOKIE_SAMESITE: none
+      GF_SECURITY_COOKIE_SECURE: "true"
+      # Disable sign-up, keep admin login working
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_USERS_DEFAULT_THEME: dark
+      # Auto-provision datasources and dashboards from mounted config
+      GF_PATHS_PROVISIONING: /etc/grafana/provisioning
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+
+volumes:
+  kc_pgdata:
+  engine_mysql:
+  grafana_data:

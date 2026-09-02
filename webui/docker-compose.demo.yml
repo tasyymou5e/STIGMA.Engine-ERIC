@@ -1,0 +1,33 @@
+# Full browser experience: local Keycloak (pre-seeded realm) + WebUI dev server.
+# The engine API runs separately from engine/docker-compose.yml on :54100.
+# All three expose host ports; the SPA (in your browser) talks to them directly.
+name: stigma-demo
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    command: ["start-dev", "--import-realm"]
+    environment:
+      - KC_BOOTSTRAP_ADMIN_USERNAME=admin
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
+      - KC_HTTP_ENABLED=true
+      - KC_HOSTNAME_STRICT=false
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./keycloak:/opt/keycloak/data/import:ro
+
+  webui:
+    image: node:22-alpine
+    working_dir: /app
+    command: sh -c "npm install --no-audit --no-fund && npm run dev -- --host 0.0.0.0 --port 5173"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - webui_node_modules:/app/node_modules
+      - ./config.local.js:/app/public/config.js:ro
+
+volumes:
+  webui_node_modules:

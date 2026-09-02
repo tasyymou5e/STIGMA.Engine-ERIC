@@ -1,0 +1,61 @@
+/* Light mode defaults */
+:root {
+  color-scheme: light;
+  --shell-bg: #f6f8fa;
+  --shell-bar: #ffffff;
+  --shell-border: #d0d7de;
+  --shell-text: #1f2328;
+  --shell-accent: #0969da;
+}
+
+/* Dark mode — activated by html.p-dark (PrimeVue 4 darkModeSelector) */
+html.p-dark {
+  color-scheme: dark;
+  --shell-bg: #0d1117;
+  --shell-bar: #161b22;
+  --shell-border: #30363d;
+  --shell-text: #c9d1d9;
+  --shell-accent: #58a6ff;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #app {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--shell-bg);
+  color: var(--shell-text);
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+.app-topbar {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.75rem 1.25rem;
+  background: var(--shell-bar);
+  border-bottom: 1px solid var(--shell-border);
+}
+
+.app-topbar .brand {
+  font-weight: 700;
+  color: var(--shell-accent);
+  font-size: 1.05rem;
+}
+
+.app-topbar nav a {
+  color: var(--shell-text);
+  text-decoration: none;
+  margin-right: 1rem;
+  opacity: 0.85;
+}
+.app-topbar nav a.router-link-active { color: var(--shell-accent); opacity: 1; }
+
+.app-topbar .spacer { flex: 1; }
+
+.app-main { padding: 1.5rem; }
+
+.muted { color: #8b949e; }

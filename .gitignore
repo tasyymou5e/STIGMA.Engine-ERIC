@@ -1,0 +1,32 @@
+# --- Secrets: never commit ---
+.env
+.env.prod
+.env.*.local
+.prod-credentials.txt
+secrets/
+prod/certs/
+*.key
+*.pem
+*.pfx
+
+# --- Dependencies ---
+node_modules/
+
+# --- Database runtime data ---
+engine/engine-mysql-data/
+
+# --- Build output ---
+dist/
+build/
+.vite/
+coverage/
+
+# --- Large vendor archives (exceed GitHub's 100 MB file limit) ---
+*.msi.zip
+U_STIGViewer-*.zip
+
+# --- Logs / scratch ---
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db

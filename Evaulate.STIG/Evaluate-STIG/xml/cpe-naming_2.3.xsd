@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:cpe-naming="http://cpe.mitre.org/naming/2.0" targetNamespace="http://cpe.mitre.org/naming/2.0" elementFormDefault="qualified" attributeFormDefault="unqualified" version="2.3">
+	<xs:annotation>
+		<xs:documentation>The CPE Naming schema defines the structure of a CPE Name and provides a method for binding a CPE Name to a dictionary of CPE Names.</xs:documentation>
+		<xs:appinfo>
+			<schema-info namespace="http://cpe.mitre.org/naming/2.0" version="2.3" date="2011-08-29"/>
+			<terms-of-use>Copyright (c) 2011, The MITRE Corporation. All rights reserved. The contents of this file are subject to the terms of the CPE Feedback License located at http://cpe.mitre.org/license/</terms-of-use>
+		</xs:appinfo>
+	</xs:annotation>
+	<xs:simpleType name="cpe22Type">
+		<xs:restriction base="xs:anyURI">
+			<xs:pattern value="cpe:/[aho](:.+){0,6}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="cpe23Type">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="cpe:2.3:[aho]:[^:]+:[^:]+:[^:]+:([^:]+(:[^:]+)?){5}"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

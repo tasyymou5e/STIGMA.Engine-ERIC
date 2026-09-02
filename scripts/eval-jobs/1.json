@@ -1,0 +1,16 @@
+{
+  "jobId": 1,
+  "collectionId": 1,
+  "targetHosts": [
+    "localhost"
+  ],
+  "selectedStigs": [
+    "Win11"
+  ],
+  "outputPath": "C:\\Temp\\EvalSTIG-Test",
+  "vdiMode": false,
+  "vulnTimeout": 15,
+  "credential": null,
+  "createdBy": "admin",
+  "createdAt": "2026-05-30T22:59:51.325Z"
+}
